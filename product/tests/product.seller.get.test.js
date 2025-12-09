@@ -48,6 +48,7 @@ describe('GET /api/products/seller (SELLER)', () => {
             price: overrides.price ?? { amount: 10, currency: 'USD' },
             seller: overrides.seller ?? sellerId1,
             images: overrides.images ?? [],
+            stock: overrides.stock ?? 0,
         });
     };
 

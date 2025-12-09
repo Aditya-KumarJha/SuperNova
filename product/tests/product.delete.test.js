@@ -47,6 +47,7 @@ describe('DELETE /api/products/:id (SELLER)', () => {
             price: overrides.price ?? { amount: 10, currency: 'USD' },
             seller: overrides.seller ?? sellerId1,
             images: overrides.images ?? [],
+            stock: overrides.stock ?? 0,
         });
     };
 

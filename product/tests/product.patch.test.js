@@ -47,6 +47,7 @@ describe('PATCH /api/products/:id (SELLER)', () => {
             price: overrides.price ?? { amount: 10, currency: 'USD' },
             seller: overrides.seller ?? sellerId1,
             images: overrides.images ?? [],
+            stock: overrides.stock ?? 0,
         });
     };
 
@@ -98,9 +99,9 @@ describe('PATCH /api/products/:id (SELLER)', () => {
     });
 
     it('updates allowed fields and returns updated product (200)', async () => {
-        const prod = await createProduct({ title: 'Old', description: 'OldDesc', price: { amount: 10, currency: 'USD' } });
+        const prod = await createProduct({ title: 'Old', description: 'OldDesc', price: { amount: 10, currency: 'USD' }, stock: 5 });
         const token = signToken(sellerId1.toHexString(), 'seller');
-        const payload = { title: 'New', description: 'NewDesc', price: { amount: 25, currency: 'USD' } };
+        const payload = { title: 'New', description: 'NewDesc', price: { amount: 25, currency: 'USD' }, stock: 100 };
 
         const res = await request(app)
             .patch(`/api/products/${prod._id}`)
@@ -114,5 +115,21 @@ describe('PATCH /api/products/:id (SELLER)', () => {
         expect(updated.title).toBe('New');
         expect(updated.description).toBe('NewDesc');
         expect(updated.price.amount).toBe(25);
+        expect(updated.stock).toBe(100);
+    });
+
+    it('updates only stock field', async () => {
+        const prod = await createProduct({ title: 'StockTest', stock: 10 });
+        const token = signToken(sellerId1.toHexString(), 'seller');
+
+        const res = await request(app)
+            .patch(`/api/products/${prod._id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ stock: 50 });
+
+        expect(res.status).toBe(200);
+        const updated = res.body?.data;
+        expect(updated.stock).toBe(50);
+        expect(updated.title).toBe('StockTest');
     });
 });

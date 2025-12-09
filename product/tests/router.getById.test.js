@@ -39,6 +39,7 @@ describe('GET /api/products/:id', () => {
             price: overrides.price ?? { amount: 42, currency: 'USD' },
             seller: overrides.seller ?? new mongoose.Types.ObjectId(),
             images: overrides.images ?? [],
+            stock: overrides.stock ?? 0,
         });
     };
 

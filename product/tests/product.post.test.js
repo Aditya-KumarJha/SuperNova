@@ -45,13 +45,28 @@ describe('POST /api/products', () => {
             .field('description', 'Nice one')
             .field('priceAmount', '99.99')
             .field('priceCurrency', 'USD')
+            .field('stock', '50')
             .attach('images', path.join(__dirname, 'fixtures', 'sample.jpg'));
 
         expect(res.status).toBe(201);
         expect(res.body?.data?.title).toBe('Test Product');
         expect(res.body?.data?.price?.amount).toBe(99.99);
+        expect(res.body?.data?.stock).toBe(50);
         expect(res.body?.data?.images?.length).toBe(1);
         expect(res.body?.data?.images[ 0 ]?.url).toContain('https://ik.mock/');
+    });
+
+    it('creates a product without stock (defaults to 0)', async () => {
+        const token = jwt.sign({ id: new mongoose.Types.ObjectId().toHexString(), role: 'seller' }, process.env.JWT_SECRET);
+        const res = await request(app)
+            .post('/api/products')
+            .set('Authorization', `Bearer ${token}`)
+            .field('title', 'Test Product 2')
+            .field('priceAmount', '49.99');
+
+        expect(res.status).toBe(201);
+        expect(res.body?.data?.title).toBe('Test Product 2');
+        expect(res.body?.data?.stock).toBe(0);
     });
 
     it('validates required fields', async () => {

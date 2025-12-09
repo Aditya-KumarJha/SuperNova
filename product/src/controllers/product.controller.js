@@ -4,7 +4,7 @@ const { uploadImage } = require('../services/imagekit.service');
 
 async function createProduct(req, res) {
     try {
-        const { title, description, priceAmount, priceCurrency = 'INR' } = req.body;
+        const { title, description, priceAmount, priceCurrency = 'INR', stock } = req.body;
         if(!title || !priceAmount) {
             return res.status(400).json({ message: "Title and Price Amount are required" });
         }
@@ -16,7 +16,14 @@ async function createProduct(req, res) {
         };
         const images = await Promise.all((req.files || []).map(file => uploadImage({ buffer: file.buffer })));
 
-        const product = await productModel.create({ title, description, price, seller, images });
+        const productData = { title, description, price, seller, images };
+        
+        // Add stock if provided
+        if (stock !== undefined) {
+            productData.stock = Number(stock);
+        }
+
+        const product = await productModel.create(productData);
         
         res.status(201).json({
             message: "Product created successfully",
@@ -92,7 +99,7 @@ async function updateProduct(req, res) {
         return res.status(403).json({ message: "Forbidden: You can only update your own products" });
     }
     
-    const allowedUpdates = ['title', 'description', 'price'];
+    const allowedUpdates = ['title', 'description', 'price', 'stock'];
     for (const key of Object.keys(req.body)) {
         if (allowedUpdates.includes(key)) {
             if (key === 'price' && typeof req.body.price === 'object') {
@@ -102,6 +109,9 @@ async function updateProduct(req, res) {
                 if (req.body.price.currency !== undefined) {
                     product.price.currency = req.body.price.currency;
                 }
+            }
+            else if (key === 'stock') {
+                product.stock = Number(req.body.stock);
             }
             else {
                 product[key] = req.body[key];
