@@ -1,6 +1,13 @@
 const express = require('express');
 const multer = require('multer');
-const { createProduct } = require('../controllers/product.controller');
+const { 
+    createProduct, 
+    getProducts, 
+    getProductById, 
+    updateProduct, 
+    deleteProduct, 
+    getProductsBySeller 
+} = require('../controllers/product.controller');
 const { createAuthMiddleware } = require('../middlewares/auth.middleware');
 const { createProductValidators } = require('../validators/product.validator');
 
@@ -15,5 +22,15 @@ router.post(
     createProductValidators,
     createProduct
 );
+
+router.get("/", getProducts);
+
+router.patch("/:id", createAuthMiddleware(["admin", "seller"]), updateProduct);
+
+router.delete("/:id", createAuthMiddleware(["admin", "seller"]), deleteProduct);
+
+router.get("/seller", createAuthMiddleware(["admin", "seller"]), getProductsBySeller);
+
+router.get("/:id", getProductById);
 
 module.exports = router;

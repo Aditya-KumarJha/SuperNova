@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
-jest.mock('../services/imagekit.service', () => ({
+jest.mock('../src/services/imagekit.service', () => ({
     uploadImage: jest.fn(async ({ filename }) => ({
         url: `https://ik.mock/${filename}`,
         thumbnail: `https://ik.mock/thumb/${filename}`,
@@ -12,7 +12,7 @@ jest.mock('../services/imagekit.service', () => ({
     })),
 }));
 
-const app = require('../app');
+const app = require('../src/app');
 
 describe('POST /api/products', () => {
     let mongo;
@@ -20,7 +20,7 @@ describe('POST /api/products', () => {
     beforeAll(async () => {
         mongo = await MongoMemoryServer.create();
         const uri = mongo.getUri();
-        process.env.MONGO_URI = uri;
+        process.env.MONGODB_URI = uri;
         process.env.JWT_SECRET = process.env.JWT_SECRET || 'testsecret';
         await mongoose.connect(uri);
     });
