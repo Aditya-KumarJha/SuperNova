@@ -45,10 +45,35 @@ if (process.env.NODE_ENV === 'test') {
         host: process.env.REDIS_HOST,
         port: process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD,
+        retryStrategy: (times) => {
+           
+            if (times > 3) {
+                console.error('Redis connection failed after 3 retries. Please check your Redis configuration.');
+                return null; 
+            }
+            const delay = Math.min(times * 200, 2000);
+            return delay;
+        },
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+        lazyConnect: true, 
     });
 
     redis.on('connect', () => {
         console.log('Connected to Redis');
+    });
+
+    redis.on('error', (err) => {
+        console.error('Redis connection error:', err.message);
+    });
+
+    redis.on('close', () => {
+        console.log('Redis connection closed');
+    });
+
+    redis.connect().catch((err) => {
+        console.error('Failed to connect to Redis:', err.message);
+        console.error('Application will continue without Redis. Session management may be affected.');
     });
 
     module.exports = redis;
