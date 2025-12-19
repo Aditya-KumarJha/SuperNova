@@ -19,23 +19,36 @@ IMAGEKIT_URL_ENDPOINT=YOUR_URL_ENDPOINT
 ```
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Aditya-KumarJha/SuperNova.git
-   ```
-2. Navigate to the `product` directory:
-   ```bash
-   cd product
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Clone the Repository
+```bash
+git clone https://github.com/Aditya-KumarJha/SuperNova.git
+```
+
+### Navigate to the `product` Directory
+```bash
+cd product
+```
+
+### Install Dependencies
+```bash
+npm install
+```
 
 ## Scripts
-- `npm run dev`: Start the development server with `nodemon`.
-- `npm start`: Start the production server.
-- `npm test`: Run tests using Jest.
+### Start the Development Server
+```bash
+npm run dev
+```
+
+### Start the Production Server
+```bash
+npm start
+```
+
+### Run Tests
+```bash
+npm test
+```
 
 ## Endpoints
 ### POST /products

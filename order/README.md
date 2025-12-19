@@ -16,23 +16,36 @@ JWT_SECRET=YOUR_SECRET_KEY
 ```
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Aditya-KumarJha/SuperNova.git
-   ```
-2. Navigate to the `order` directory:
-   ```bash
-   cd order
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Clone the Repository
+```bash
+git clone https://github.com/Aditya-KumarJha/SuperNova.git
+```
+
+### Navigate to the `order` Directory
+```bash
+cd order
+```
+
+### Install Dependencies
+```bash
+npm install
+```
 
 ## Scripts
-- `npm run dev`: Start the development server with `nodemon`.
-- `npm start`: Start the production server.
-- `npm test`: Run tests using Jest.
+### Start the Development Server
+```bash
+npm run dev
+```
+
+### Start the Production Server
+```bash
+npm start
+```
+
+### Run Tests
+```bash
+npm test
+```
 
 ## Endpoints
 ### POST /orders
