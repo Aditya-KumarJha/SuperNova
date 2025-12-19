@@ -17,8 +17,14 @@ JWT_SECRET=YOUR_SECRET_KEY
 ```
 
 ## Installation
-1. Clone the repository.
-2. Navigate to the `cart` directory.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Aditya-KumarJha/SuperNova.git
+   ```
+2. Navigate to the `cart` directory:
+   ```bash
+   cd cart
+   ```
 3. Install dependencies:
    ```bash
    npm install
@@ -29,6 +35,25 @@ JWT_SECRET=YOUR_SECRET_KEY
 - `npm start`: Start the production server.
 - `npm test`: Run tests using Jest.
 - `npm run test:watch`: Run tests in watch mode.
+
+## Endpoints
+### POST /cart
+- **Description**: Add an item to the cart.
+- **Request Body**: `{ productId, quantity }`
+- **Response**: `201 Created`
+
+### PATCH /cart/:itemId
+- **Description**: Update the quantity of an item in the cart.
+- **Request Body**: `{ quantity }`
+- **Response**: `200 OK`
+
+### DELETE /cart/:itemId
+- **Description**: Remove an item from the cart.
+- **Response**: `200 OK`
+
+### GET /cart
+- **Description**: Retrieve the user's cart.
+- **Response**: `200 OK`
 
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.

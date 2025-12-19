@@ -20,8 +20,14 @@ REDIS_PASSWORD=YOUR_REDIS_PASSWORD
 ```
 
 ## Installation
-1. Clone the repository.
-2. Navigate to the `auth` directory.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Aditya-KumarJha/SuperNova.git
+   ```
+2. Navigate to the `auth` directory:
+   ```bash
+   cd auth
+   ```
 3. Install dependencies:
    ```bash
    npm install
@@ -32,6 +38,25 @@ REDIS_PASSWORD=YOUR_REDIS_PASSWORD
 - `npm start`: Start the production server.
 - `npm test`: Run tests using Jest.
 - `npm run test:watch`: Run tests in watch mode.
+
+## Endpoints
+### POST /register
+- **Description**: Register a new user.
+- **Request Body**: `{ username, password, email }`
+- **Response**: `201 Created`
+
+### POST /login
+- **Description**: Log in a user.
+- **Request Body**: `{ username, password }`
+- **Response**: `200 OK`
+
+### GET /me
+- **Description**: Get the current user's details.
+- **Response**: `200 OK`
+
+### POST /logout
+- **Description**: Log out the current user.
+- **Response**: `200 OK`
 
 ## Testing
 Jest is used for testing. Test files are located in the `__tests__` directory.

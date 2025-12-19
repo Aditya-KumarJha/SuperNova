@@ -19,8 +19,14 @@ IMAGEKIT_URL_ENDPOINT=YOUR_URL_ENDPOINT
 ```
 
 ## Installation
-1. Clone the repository.
-2. Navigate to the `product` directory.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Aditya-KumarJha/SuperNova.git
+   ```
+2. Navigate to the `product` directory:
+   ```bash
+   cd product
+   ```
 3. Install dependencies:
    ```bash
    npm install
@@ -30,6 +36,29 @@ IMAGEKIT_URL_ENDPOINT=YOUR_URL_ENDPOINT
 - `npm run dev`: Start the development server with `nodemon`.
 - `npm start`: Start the production server.
 - `npm test`: Run tests using Jest.
+
+## Endpoints
+### POST /products
+- **Description**: Create a new product.
+- **Request Body**: `{ name, price, description, image }`
+- **Response**: `201 Created`
+
+### PATCH /products/:productId
+- **Description**: Update product details.
+- **Request Body**: `{ name, price, description }`
+- **Response**: `200 OK`
+
+### DELETE /products/:productId
+- **Description**: Delete a product.
+- **Response**: `200 OK`
+
+### GET /products
+- **Description**: Retrieve all products.
+- **Response**: `200 OK`
+
+### GET /products/:productId
+- **Description**: Retrieve a product by ID.
+- **Response**: `200 OK`
 
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
