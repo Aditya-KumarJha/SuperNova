@@ -11,11 +11,11 @@ The Product microservice is responsible for managing product data. It provides e
 The following environment variables are required to run this service:
 
 ```env
-MONGODB_URI=mongodb+srv://adikumarjha12:ImYNWTStwlngXfZY@cluster0.cujvm7h.mongodb.net/supernova-product
-JWT_SECRET=35ccb2bdc923e8468fe76e4d844db08899aacf7d8e0d67df3801e6f36d0432c8
-IMAGEKIT_PRIVATE_KEY="private_MHguiie5ysvCLll9Jb+tADPmQr0="
-IMAGEKIT_PUBLIC_KEY="public_fdM2ci/Y/1GxSIjczaeWYkKN82I="
-IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/wl9xamwdr
+MONGODB_URI=YOUR_MONGODB_URI
+JWT_SECRET=YOUR_SECRET_KEY
+IMAGEKIT_PRIVATE_KEY=YOUR_PRIVATE_KEY
+IMAGEKIT_PUBLIC_KEY=YOUR_PUBLIC_KEY
+IMAGEKIT_URL_ENDPOINT=YOUR_URL_ENDPOINT
 ```
 
 ## Installation

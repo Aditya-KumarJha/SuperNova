@@ -12,8 +12,8 @@ The Cart microservice is responsible for managing user carts. It provides endpoi
 The following environment variables are required to run this service:
 
 ```env
-MONGODB_URI=mongodb+srv://adikumarjha12:ImYNWTStwlngXfZY@cluster0.cujvm7h.mongodb.net/supernova-cart
-JWT_SECRET=35ccb2bdc923e8468fe76e4d844db08899aacf7d8e0d67df3801e6f36d0432c8
+MONGODB_URI=YOUR_MONGODB_URI
+JWT_SECRET=YOUR_SECRET_KEY
 ```
 
 ## Installation

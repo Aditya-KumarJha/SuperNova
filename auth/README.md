@@ -12,11 +12,11 @@ The Auth microservice is responsible for handling user authentication and author
 The following environment variables are required to run this service:
 
 ```env
-MONGODB_URI=mongodb+srv://adikumarjha12:ImYNWTStwlngXfZY@cluster0.cujvm7h.mongodb.net/supernova-auth
-JWT_SECRET=35ccb2bdc923e8468fe76e4d844db08899aacf7d8e0d67df3801e6f36d0432c8
-REDIS_HOST=redis-10818.crce217.ap-south-1-1.ec2.cloud.redislabs.com
-REDIS_PORT=10818
-REDIS_PASSWORD=ngElXvxgYOLn9Z68Bm450TDG4yZDdcT3
+MONGODB_URI=YOUR_MONGODB_URI
+JWT_SECRET=YOUR_SECRET_KEY
+REDIS_HOST=YOUR_REDIS_HOST
+REDIS_PORT=YOUR_REDIS_PORT
+REDIS_PASSWORD=YOUR_REDIS_PASSWORD
 ```
 
 ## Installation
