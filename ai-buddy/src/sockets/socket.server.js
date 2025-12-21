@@ -1,6 +1,8 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
+const { agent } = require('../agents/agent');
+const { da } = require('zod/locales');
 
 async function initSocketServer(httpServer) {
     const io = new Server(httpServer, {});
@@ -17,6 +19,8 @@ async function initSocketServer(httpServer) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             socket.user = decoded;
+            socket.token = token;
+
             next();
         } 
         catch (err) {
@@ -26,6 +30,19 @@ async function initSocketServer(httpServer) {
 
     io.on('connection', (socket) => {
         console.log('New user connected');
+        socket.on('message', async (data)=> {
+            const agentResponse = await agent.invoke({
+                messages: [{
+                    role: 'user',
+                    content: data
+                }]
+            }, { metadata: { token: socket.token } });
+
+            const lastMessage = agentResponse.messages[ agentResponse.messages.length -1 ];
+
+            socket.emit('message', lastMessage.content);
+        });
+
         socket.on('disconnect', () => {
             console.log('User disconnected');
         });
