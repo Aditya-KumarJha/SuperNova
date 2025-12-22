@@ -81,12 +81,21 @@ async function loginUser(req, res) {
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+        
+        // Publish user login event to RabbitMQ
+        await publishToQueue('AUTH_NOTIFICATION.USER_LOGGED_IN', {
+            userId: user._id,
+            username: user.username,
+            email: user.email,
+            fullName: user.fullName,
+        });
 
         const token = jwt.sign({
             id: user._id,
             username: user.username,
             email: user.email,
-            role: user.role
+            role: user.role,
+            fullName: user.fullName,
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         res.cookie('token', token, {
