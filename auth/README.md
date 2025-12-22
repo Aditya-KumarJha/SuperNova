@@ -7,6 +7,8 @@ The Auth microservice is responsible for handling user authentication and author
 - JWT-based authentication
 - Redis-based session management
 - Input validation using `express-validator`
+- Address management: Users can add, retrieve, and set default addresses
+- RabbitMQ integration for event-driven communication
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -17,6 +19,7 @@ JWT_SECRET=YOUR_SECRET_KEY
 REDIS_HOST=YOUR_REDIS_HOST
 REDIS_PORT=YOUR_REDIS_PORT
 REDIS_PASSWORD=YOUR_REDIS_PASSWORD
+RABBITMQ_URL=YOUR_RABBITMQ_URL
 ```
 
 ## Installation
@@ -75,10 +78,33 @@ npm run test:watch
 - **Description**: Log out the current user.
 - **Response**: `200 OK`
 
+### GET /api/auth/users/me/addresses
+- **Description**: Retrieve a list of user addresses.
+- **Response**: `200 OK`
+
+### POST /api/auth/users/me/addresses
+- **Description**: Add a new address for the user.
+- **Request Body**: `{ street, city, state, zip, country, isDefault }`
+- **Response**: `201 Created`
+
+## RabbitMQ Integration
+- **Queue**: `AUTH_NOTIFICATION.USER_CREATED`
+  - **Event**: Published when a new user is created.
+  - **Payload**: `{ userId, username, email, fullName }`
+- **Queue**: `AUTH_NOTIFICATION.USER_LOGGED_IN`
+  - **Event**: Published when a user logs in.
+  - **Payload**: `{ userId, username, email, fullName }`
+
+## Inter-Service Communication
+- The `notification` microservice listens to the `USER_CREATED` and `USER_LOGGED_IN` queues.
+  - For `USER_CREATED`: Sends a welcome email to the user.
+  - For `USER_LOGGED_IN`: Sends a login notification email to the user.
+
 ## Testing
 Jest is used for testing. Test files are located in the `__tests__` directory.
 
 ## Dependencies
+- `amqplib`
 - `bcryptjs`
 - `cookie-parser`
 - `dotenv`

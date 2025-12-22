@@ -1,12 +1,14 @@
 # Notification Microservice
 
-The Notification microservice is responsible for sending transactional emails triggered by events from other services (e.g., Auth and Payment). It listens to RabbitMQ queues and sends rich HTML emails using Nodemailer.
+The Notification microservice is responsible for sending transactional emails triggered by events from other services (e.g., Auth, Payment, Product, and Order). It listens to RabbitMQ queues and sends rich HTML emails using Nodemailer.
 
 ## Features
 - Listens to RabbitMQ queues for domain events
 - Sends welcome emails on user registration
 - Sends security alerts on user login
 - Sends payment success and failure notifications
+- Sends product creation, update, and deletion notifications
+- Sends order cancellation notifications
 - Centralized email sending using Nodemailer
 
 ## Environment Variables
@@ -54,6 +56,10 @@ npm start
   - `AUTH_NOTIFICATION.USER_LOGGED_IN`
   - `PAYMENT_NOTIFICATION.PAYMENT_COMPLETED`
   - `PAYMENT_NOTIFICATION.PAYMENT_FAILED`
+  - `PRODUCT_NOTIFICATION.PRODUCT_CREATED`
+  - `PRODUCT_NOTIFICATION.PRODUCT_UPDATED`
+  - `PRODUCT_NOTIFICATION.PRODUCT_DELETED`
+  - `ORDER_NOTIFICATION.ORDER_CANCELLED`
 - For each message, it builds a context-aware HTML template and sends an email using the SMTP transport configured in `src/email.js`.
 
 ## Endpoints
