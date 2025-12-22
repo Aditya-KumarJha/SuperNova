@@ -1,6 +1,7 @@
 const orderModel = require('../models/order.model');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const { publishToQueue } = require('../broker/broker');
 
 async function createOrder(req, res) {
     const user = req.user;
@@ -147,6 +148,18 @@ async function cancelOrder(req, res) {
 
         order.status = "CANCELLED";
         await order.save();
+
+        try {
+            await publishToQueue('ORDER_NOTIFICATION.ORDER_CANCELLED', {
+                email: req.user.email,
+                fullName: req.user.fullName,
+                orderId: order._id,
+                totalPrice: order.totalPrice,
+                cancelledAt: new Date().toISOString(),
+            });
+        } catch (queueError) {
+            console.error('Error publishing ORDER_NOTIFICATION.ORDER_CANCELLED:', queueError);
+        }
 
         res.status(200).json({ message: "Order cancelled successfully", order });
     } catch (err) {

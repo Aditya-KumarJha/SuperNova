@@ -415,4 +415,72 @@ module.exports = function () {
             emailHTMLTemplate
         );
     });
+
+    subscribeToQueue('ORDER_NOTIFICATION.ORDER_CANCELLED', async (data) => {
+
+        const customerName =
+            `${data.fullName?.firstName || ''} ${data.fullName?.lastName || ''}`.trim();
+
+        const cancelledAt = data.cancelledAt
+            ? new Date(data.cancelledAt).toLocaleString()
+            : new Date().toLocaleString();
+
+        const emailHTMLTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <h2 style="color: #e67e22;">Order Cancelled 🧾❌</h2>
+
+                <p>Hi <strong>${customerName || 'there'}</strong>,</p>
+
+                <p>
+                    This is to confirm that your order has been <strong>cancelled</strong>.
+                </p>
+
+                <h3>Order Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Order ID</strong></td>
+                        <td style="padding: 8px 0;">${data.orderId}</td>
+                    </tr>
+                    ${data.totalPrice ? `
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Order Amount</strong></td>
+                        <td style="padding: 8px 0;">
+                            ${(data.totalPrice.currency || '').toUpperCase()} ${data.totalPrice.amount}
+                        </td>
+                    </tr>` : ''}
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Cancelled At</strong></td>
+                        <td style="padding: 8px 0;">${cancelledAt}</td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+
+                <p>
+                    If you have already made any payment related to this order, it will be handled as per our
+                    <a href="#" style="color: #2980b9; text-decoration: none;">refund and cancellation policy</a>.
+                </p>
+
+                <p>
+                    If you did not request this cancellation, please contact our support team immediately.
+                </p>
+
+                <p style="margin-top: 30px;">
+                    Best regards,<br/>
+                    <strong>The SuperNova Team</strong>
+                </p>
+
+                <p style="font-size: 12px; color: #888;">
+                    This is an automated email confirming your order cancellation.
+                </p>
+            </div>
+        `;
+
+        await sendEmail(
+            data.email,
+            'Your order has been cancelled',
+            `Your order ${data.orderId} has been cancelled successfully`,
+            emailHTMLTemplate
+        );
+    });
 };
