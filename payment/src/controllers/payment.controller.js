@@ -2,6 +2,7 @@ const paymentModel = require('../models/payment.model');
 const axios = require('axios');
 const Razorpay = require('razorpay');
 const mongoose = require('mongoose');
+const { publishToQueue } = require('../broker/broker');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -79,9 +80,28 @@ async function verifyPayment(req, res) {
 
         await payment.save();
 
+        // Publish payment completed event to RabbitMQ
+        await publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_COMPLETED', {
+            email: req.user.email,
+            orderId: payment.orderId,
+            paymentId: payment.razorpayPaymentId,
+            amount: payment.price.amount,
+            currency: payment.price.currency,
+            fullName: req.user.fullName
+        });
+
         res.status(200).json({ message: 'Payment verified successfully', payment: payment });
     } catch (error) {
         console.error(error);
+
+        // Publish payment failed event to RabbitMQ
+        await publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_FAILED', {
+            email: req.user.email,
+            paymentId: razorpayPaymentId,
+            orderId: razorpayOrderId,
+            fullName: req.user.fullName
+        });
+
         res.status(500).send('Error verifying payment');
     }
 };
