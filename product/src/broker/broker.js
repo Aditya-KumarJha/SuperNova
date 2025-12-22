@@ -7,12 +7,12 @@ async function connect() {
 
     try {
         connection = await amqplib.connect(process.env.RABBITMQ_URL);
-        console.log('Connected to RabbitMQ (payment service)');
+        console.log('Connected to RabbitMQ (product service)');
         channel = await connection.createChannel();
     } catch (error) {
-        console.error('Error connecting to RabbitMQ:', error);
+        console.error('Error connecting to RabbitMQ in product service:', error);
     }
-};
+}
 
 async function publishToQueue(queueName, data = {}) {
     if (!channel || !connection) {
@@ -25,30 +25,11 @@ async function publishToQueue(queueName, data = {}) {
 
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)));
     console.log(`Message sent to queue ${queueName}, data ${JSON.stringify(data)}`);
-};
-
-async function subscribeToQueue(queueName, callback) {
-    if (!channel || !connection) {
-        await connect();
-    }
-
-    await channel.assertQueue(queueName, {
-        durable: true,
-    });
-
-    channel.consume(queueName, async (msg) => {
-        if (msg !== null) {
-            const data = JSON.parse(msg.content.toString());
-            await callback(data);
-            channel.ack(msg);
-        }
-    });
-};
+}
 
 module.exports = {
     channel,
     connection,
     connect,
     publishToQueue,
-    subscribeToQueue,
 };

@@ -232,4 +232,187 @@ module.exports = function () {
             emailHTMLTemplate
         );
     });
+
+    subscribeToQueue('PRODUCT_NOTIFICATION.PRODUCT_CREATED', async (data) => {
+
+        const sellerName =
+            `${data.fullName?.firstName || ''} ${data.fullName?.lastName || ''}`.trim();
+
+        const emailHTMLTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <h2 style="color: #2c3e50;">New Product Created 🛍️</h2>
+
+                <p>Hi <strong>${sellerName || 'there'}</strong>,</p>
+
+                <p>
+                    Your product has been successfully created on <strong>SuperNova</strong>.
+                </p>
+
+                <h3>Product Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Title</strong></td>
+                        <td style="padding: 8px 0;">${data.title}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Price</strong></td>
+                        <td style="padding: 8px 0;">${data.price?.currency?.toUpperCase?.() || ''} ${data.price?.amount}</td>
+                    </tr>
+                    ${data.stock !== undefined ? `
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Stock</strong></td>
+                        <td style="padding: 8px 0;">${data.stock}</td>
+                    </tr>` : ''}
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Product ID</strong></td>
+                        <td style="padding: 8px 0;">${data.productId}</td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+
+                <p>
+                    You can manage this product from your seller dashboard.
+                </p>
+
+                <p style="margin-top: 30px;">
+                    Best regards,<br/>
+                    <strong>The SuperNova Team</strong>
+                </p>
+
+                <p style="font-size: 12px; color: #888;">
+                    This is an automated confirmation of your product creation.
+                </p>
+            </div>
+        `;
+
+        await sendEmail(
+            data.email,
+            'Your product has been created',
+            `Your product "${data.title}" has been created successfully`,
+            emailHTMLTemplate
+        );
+    });
+
+    subscribeToQueue('PRODUCT_NOTIFICATION.PRODUCT_UPDATED', async (data) => {
+
+        const sellerName =
+            `${data.fullName?.firstName || ''} ${data.fullName?.lastName || ''}`.trim();
+
+        const emailHTMLTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <h2 style="color: #2c3e50;">Product Updated ✏️</h2>
+
+                <p>Hi <strong>${sellerName || 'there'}</strong>,</p>
+
+                <p>
+                    Your product details have been updated successfully.
+                </p>
+
+                <h3>Product Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Title</strong></td>
+                        <td style="padding: 8px 0;">${data.title}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Price</strong></td>
+                        <td style="padding: 8px 0;">${data.price?.currency?.toUpperCase?.() || ''} ${data.price?.amount}</td>
+                    </tr>
+                    ${data.stock !== undefined ? `
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Stock</strong></td>
+                        <td style="padding: 8px 0;">${data.stock}</td>
+                    </tr>` : ''}
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Product ID</strong></td>
+                        <td style="padding: 8px 0;">${data.productId}</td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+
+                <p>
+                    If you didn't initiate this change, please review your account security.
+                </p>
+
+                <p style="margin-top: 30px;">
+                    Best regards,<br/>
+                    <strong>The SuperNova Team</strong>
+                </p>
+
+                <p style="font-size: 12px; color: #888;">
+                    This is an automated notification regarding a product update.
+                </p>
+            </div>
+        `;
+
+        await sendEmail(
+            data.email,
+            'Your product has been updated',
+            `Your product "${data.title}" has been updated successfully`,
+            emailHTMLTemplate
+        );
+    });
+
+    subscribeToQueue('PRODUCT_NOTIFICATION.PRODUCT_DELETED', async (data) => {
+
+        const sellerName =
+            `${data.fullName?.firstName || ''} ${data.fullName?.lastName || ''}`.trim();
+
+        const emailHTMLTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <h2 style="color: #e74c3c;">Product Deleted 🗑️</h2>
+
+                <p>Hi <strong>${sellerName || 'there'}</strong>,</p>
+
+                <p>
+                    Your product has been deleted from <strong>SuperNova</strong>.
+                </p>
+
+                <h3>Product Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Title</strong></td>
+                        <td style="padding: 8px 0;">${data.title}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Price</strong></td>
+                        <td style="padding: 8px 0;">${data.price?.currency?.toUpperCase?.() || ''} ${data.price?.amount}</td>
+                    </tr>
+                    ${data.stock !== undefined ? `
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Stock (at deletion)</strong></td>
+                        <td style="padding: 8px 0;">${data.stock}</td>
+                    </tr>` : ''}
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Product ID</strong></td>
+                        <td style="padding: 8px 0;">${data.productId}</td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+
+                <p>
+                    If you didn't request this deletion, please contact support immediately.
+                </p>
+
+                <p style="margin-top: 30px;">
+                    Best regards,<br/>
+                    <strong>The SuperNova Team</strong>
+                </p>
+
+                <p style="font-size: 12px; color: #888;">
+                    This is an automated confirmation of your product deletion.
+                </p>
+            </div>
+        `;
+
+        await sendEmail(
+            data.email,
+            'Your product has been deleted',
+            `Your product "${data.title}" has been deleted`,
+            emailHTMLTemplate
+        );
+    });
 };

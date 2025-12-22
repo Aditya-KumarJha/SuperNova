@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const productModel = require('../models/product.model');
 const { uploadImage } = require('../services/imagekit.service');
+const { publishToQueue } = require('../broker/broker');
 
 async function createProduct(req, res) {
     try {
@@ -24,7 +25,20 @@ async function createProduct(req, res) {
         }
 
         const product = await productModel.create(productData);
-        
+
+        try {
+            await publishToQueue('PRODUCT_NOTIFICATION.PRODUCT_CREATED', {
+                email: req.user.email,
+                fullName: req.user.fullName,
+                productId: product._id,
+                title: product.title,
+                price: product.price,
+                stock: product.stock,
+            });
+        } catch (queueError) {
+            console.error('Error publishing PRODUCT_NOTIFICATION.PRODUCT_CREATED:', queueError);
+        }
+
         res.status(201).json({
             message: "Product created successfully",
             data: product
@@ -120,6 +134,19 @@ async function updateProduct(req, res) {
     }
     await product.save();
 
+    try {
+        await publishToQueue('PRODUCT_NOTIFICATION.PRODUCT_UPDATED', {
+            email: req.user.email,
+            fullName: req.user.fullName,
+            productId: product._id,
+            title: product.title,
+            price: product.price,
+            stock: product.stock,
+        });
+    } catch (queueError) {
+        console.error('Error publishing PRODUCT_NOTIFICATION.PRODUCT_UPDATED:', queueError);
+    }
+
     return res.status(200).json({
         message: "Product updated successfully",
         data: product
@@ -144,6 +171,20 @@ async function deleteProduct(req, res) {
     }
     
     await productModel.findOneAndDelete({ _id: id });
+
+    try {
+        await publishToQueue('PRODUCT_NOTIFICATION.PRODUCT_DELETED', {
+            email: req.user.email,
+            fullName: req.user.fullName,
+            productId: product._id,
+            title: product.title,
+            price: product.price,
+            stock: product.stock,
+        });
+    } catch (queueError) {
+        console.error('Error publishing PRODUCT_NOTIFICATION.PRODUCT_DELETED:', queueError);
+    }
+
     return res.status(200).json({
         message: "Product deleted successfully",
         data: null
