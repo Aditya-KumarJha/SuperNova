@@ -2,11 +2,12 @@
 
 The Cart microservice is responsible for managing user carts. It provides endpoints for adding, updating, and removing items from the cart.
 
-## Features
-- Add items to the cart
-- Update item quantities
-- Remove items from the cart
-- Retrieve cart details
+## Updated Features
+- **Health Check Endpoint**: Provides a health check endpoint at `/` to verify the service status.
+- **Cart Management**:
+  - Add, update, and remove items in the cart.
+  - Clear the entire cart.
+  - Retrieve cart details, including total item count and quantity.
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -71,6 +72,10 @@ npm run test:watch
 ### GET /cart
 - **Description**: Retrieve the user's cart.
 - **Response**: `200 OK`
+
+### GET /
+- **Description**: Health check endpoint.
+- **Response**: `{ message: 'Cart service is running' }`
 
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.

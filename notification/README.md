@@ -10,6 +10,20 @@ The Notification microservice is responsible for sending transactional emails tr
 - Sends product creation, update, and deletion notifications
 - Sends order cancellation notifications
 - Centralized email sending using Nodemailer
+- **Health Check Endpoint**: Provides a health check endpoint at `/` to verify the service status.
+- **RabbitMQ Integration**:
+  - Subscribes to the following queues:
+    - `AUTH_NOTIFICATION.USER_CREATED`: Sends welcome emails to new users.
+    - `AUTH_NOTIFICATION.USER_LOGGED_IN`: Sends security alerts for user logins.
+    - `PAYMENT_NOTIFICATION.PAYMENT_COMPLETED`: Sends payment success notifications.
+    - `PAYMENT_NOTIFICATION.PAYMENT_FAILED`: Sends payment failure notifications.
+    - `PAYMENT_NOTIFICATION.PAYMENT_INITIATED`: Sends payment initiation notifications.
+    - `PRODUCT_NOTIFICATION.PRODUCT_CREATED`: Sends product creation confirmation emails.
+    - `PRODUCT_NOTIFICATION.PRODUCT_UPDATED`: Sends product update confirmation emails.
+    - `PRODUCT_NOTIFICATION.PRODUCT_DELETED`: Sends product deletion confirmation emails.
+    - `ORDER_NOTIFICATION.ORDER_CANCELLED`: Sends order cancellation notifications.
+- **Inter-Service Communication**:
+  - Processes events from `auth`, `payment`, `product`, and `order` services to send transactional emails.
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -56,6 +70,7 @@ npm start
   - `AUTH_NOTIFICATION.USER_LOGGED_IN`
   - `PAYMENT_NOTIFICATION.PAYMENT_COMPLETED`
   - `PAYMENT_NOTIFICATION.PAYMENT_FAILED`
+  - `PAYMENT_NOTIFICATION.PAYMENT_INITIATED`
   - `PRODUCT_NOTIFICATION.PRODUCT_CREATED`
   - `PRODUCT_NOTIFICATION.PRODUCT_UPDATED`
   - `PRODUCT_NOTIFICATION.PRODUCT_DELETED`
@@ -65,7 +80,7 @@ npm start
 ## Endpoints
 ### GET /
 - **Description**: Health check endpoint to verify that the service is running.
-- **Response**: `200 OK` with message `"Notification Service is up and running"`.
+- **Response**: `{ message: 'Notification service is running' }`
 
 ## Dependencies
 - `amqplib`

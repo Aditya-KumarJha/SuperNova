@@ -8,6 +8,18 @@ The Product microservice is responsible for managing product data. It provides e
 - Image upload and management using ImageKit
 - Publishes and consumes events via RabbitMQ
 
+## Updated Features
+- **Health Check Endpoint**: Provides a health check endpoint at `/` to verify the service status.
+- **RabbitMQ Integration**:
+  - Publishes events to the following queues:
+    - `PRODUCT_NOTIFICATION.PRODUCT_CREATED`: Notifies the notification service about product creation.
+    - `PRODUCT_NOTIFICATION.PRODUCT_UPDATED`: Notifies the notification service about product updates.
+    - `PRODUCT_NOTIFICATION.PRODUCT_DELETED`: Notifies the notification service about product deletions.
+    - `PRODUCT_SELLER_DASHBOARD.PRODUCT_CREATED`: Sends product data to the seller dashboard.
+- **Inter-Service Communication**:
+  - Sends product-related events to the `notification` and `seller-dashboard` services.
+  - Example: `notification` service listens to `PRODUCT_CREATED`, `PRODUCT_UPDATED`, and `PRODUCT_DELETED` events to send emails.
+
 ## Environment Variables
 The following environment variables are required to run this service:
 
@@ -83,6 +95,10 @@ npm test
 ### GET /products/seller
 - **Description**: Retrieve products by the authenticated seller.
 - **Response**: `200 OK`
+
+### GET /
+- **Description**: Health check endpoint.
+- **Response**: `{ message: 'Product service is running' }`
 
 ## RabbitMQ Integration
 - **Queue**: `PRODUCT_NOTIFICATION.PRODUCT_CREATED`

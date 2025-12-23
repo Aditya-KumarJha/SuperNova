@@ -9,6 +9,7 @@ The Auth microservice is responsible for handling user authentication and author
 - Input validation using `express-validator`
 - Address management: Users can add, retrieve, and set default addresses
 - RabbitMQ integration for event-driven communication
+- Health Check Endpoint: Provides a health check endpoint at `/` to verify the service status.
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -87,9 +88,16 @@ npm run test:watch
 - **Request Body**: `{ street, city, state, zip, country, isDefault }`
 - **Response**: `201 Created`
 
+### GET /
+- **Description**: Health check endpoint.
+- **Response**: `{ message: 'Auth service is running' }`
+
 ## RabbitMQ Integration
 - **Queue**: `AUTH_NOTIFICATION.USER_CREATED`
   - **Event**: Published when a new user is created.
+  - **Payload**: `{ userId, username, email, fullName }`
+- **Queue**: `AUTH_SELLER_DASHBOARD.USER_CREATED`
+  - **Event**: Sends user data to the seller dashboard.
   - **Payload**: `{ userId, username, email, fullName }`
 - **Queue**: `AUTH_NOTIFICATION.USER_LOGGED_IN`
   - **Event**: Published when a user logs in.
@@ -99,6 +107,7 @@ npm run test:watch
 - The `notification` microservice listens to the `USER_CREATED` and `USER_LOGGED_IN` queues.
   - For `USER_CREATED`: Sends a welcome email to the user.
   - For `USER_LOGGED_IN`: Sends a login notification email to the user.
+- User-related events are sent to the `notification` and `seller-dashboard` services.
 
 ## Testing
 Jest is used for testing. Test files are located in the `__tests__` directory.

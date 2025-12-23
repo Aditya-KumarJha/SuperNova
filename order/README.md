@@ -7,6 +7,7 @@ The Order microservice is responsible for managing orders. It provides endpoints
 - Retrieve order details
 - Cancel orders
 - Publishes and consumes events via RabbitMQ
+- Health Check Endpoint: Provides a health check endpoint at `/` to verify the service status.
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -81,6 +82,10 @@ npm test
 - **Description**: Cancel an order.
 - **Response**: `200 OK`
 
+### GET /
+- **Description**: Health check endpoint.
+- **Response**: `{ message: 'Order service is running' }`
+
 ## RabbitMQ Integration
 - **Queue**: `ORDER_NOTIFICATION.ORDER_CREATED`
   - **Event**: Published when a new order is created.
@@ -88,11 +93,15 @@ npm test
 - **Queue**: `ORDER_NOTIFICATION.ORDER_CANCELLED`
   - **Event**: Published when an order is canceled.
   - **Payload**: `{ orderId, userId, cancelledAt }`
+- Publishes events to the following queues:
+  - `ORDER_SELLER_DASHBOARD.ORDER_CREATED`: Sends order data to the seller dashboard.
+  - `ORDER_NOTIFICATION.ORDER_CANCELLED`: Notifies the notification service about order cancellations.
 
 ## Inter-Service Communication
 - The `notification` microservice listens to the `ORDER_CREATED` and `ORDER_CANCELLED` queues.
   - For `ORDER_CREATED`: Sends an order confirmation email to the user.
   - For `ORDER_CANCELLED`: Sends an order cancellation email to the user.
+- Sends order-related events to the `notification` and `seller-dashboard` services.
 
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.

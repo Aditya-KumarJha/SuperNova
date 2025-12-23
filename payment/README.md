@@ -7,6 +7,7 @@ The Payment microservice is responsible for handling payment processing and veri
 - Payment verification
 - Secure payment handling
 - Publishes and consumes events via RabbitMQ
+- Health Check Endpoint
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -71,6 +72,10 @@ npm run test:watch
 - **Request Body**: `{ paymentId, signature }`
 - **Response**: `200 OK`
 
+### GET /
+- **Description**: Health check endpoint.
+- **Response**: `{ message: 'Payment service is running' }`
+
 ## RabbitMQ Integration
 - **Queue**: `PAYMENT_NOTIFICATION.PAYMENT_COMPLETED`
   - **Event**: Published when a payment is successfully completed.
@@ -78,11 +83,18 @@ npm run test:watch
 - **Queue**: `PAYMENT_NOTIFICATION.PAYMENT_FAILED`
   - **Event**: Published when a payment fails.
   - **Payload**: `{ paymentId, orderId, userId, amount, currency, failureReason }`
+- **Queue**: `PAYMENT_SELLER_DASHBOARD.PAYMENT_CREATED`
+  - **Event**: Sends payment data to the seller dashboard.
+  - **Payload**: `{ paymentId, orderId, userId, amount, currency }`
+- **Queue**: `PAYMENT_NOTIFICATION.PAYMENT_INITIATED`
+  - **Event**: Notifies the notification service about payment initiation.
+  - **Payload**: `{ paymentId, orderId, userId, amount, currency }`
 
 ## Inter-Service Communication
 - The `notification` microservice listens to the `PAYMENT_COMPLETED` and `PAYMENT_FAILED` queues.
   - For `PAYMENT_COMPLETED`: Sends a payment success email to the user.
   - For `PAYMENT_FAILED`: Sends a payment failure email to the user.
+- The `seller-dashboard` service receives payment data for updates on the seller's dashboard.
 
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
