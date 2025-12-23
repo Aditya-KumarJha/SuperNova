@@ -9,4 +9,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Auth service is running' });
+});
+
 module.exports = app;

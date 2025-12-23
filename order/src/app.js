@@ -8,4 +8,8 @@ app.use(cookieParser());
 
 app.use('/api/orders', orderRoutes);
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Order service is running' });
+});
+
 module.exports = app;

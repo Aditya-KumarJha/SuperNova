@@ -8,4 +8,8 @@ app.use(cookieParser());
 
 app.use("/api/cart", cartRoutes);
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Cart service is running' });
+});
+
 module.exports = app;

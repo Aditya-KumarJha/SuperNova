@@ -8,4 +8,8 @@ app.use(cookieParser());
 
 app.use('/api/products', productRoutes);
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Product service is running' });
+});
+
 module.exports = app;
