@@ -38,6 +38,17 @@ async function createPayment(req, res) {
             }
         });
 
+        await Promise.all([
+            publishToQueue('PAYMENT_SELLER_DASHBOARD.PAYMENT_CREATED', payment),
+            publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_INITIATED', {
+            email: req.user.email,
+            fullName: req.user.fullName,
+            orderId: orderId,
+            amount: order.amount,
+            currency: order.currency
+            })
+        ]);
+
         return res.status(201).json({
             message: 'Payment initiated successfully',
             payment: payment
@@ -81,14 +92,17 @@ async function verifyPayment(req, res) {
         await payment.save();
 
         // Publish payment completed event to RabbitMQ
-        await publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_COMPLETED', {
-            email: req.user.email,
-            orderId: payment.orderId,
-            paymentId: payment.razorpayPaymentId,
-            amount: payment.price.amount,
-            currency: payment.price.currency,
-            fullName: req.user.fullName
-        });
+        await Promise.all([
+            publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_COMPLETED', {
+                email: req.user.email,
+                orderId: payment.orderId,
+                paymentId: payment.razorpayPaymentId,
+                amount: payment.price.amount,
+                currency: payment.price.currency,
+                fullName: req.user.fullName
+            }),
+            publishToQueue('PAYMENT_NOTIFICATION.PAYMENT_UPDATED', payment)
+        ]);
 
         res.status(200).json({ message: 'Payment verified successfully', payment: payment });
     } catch (error) {

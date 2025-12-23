@@ -64,6 +64,8 @@ async function createOrder(req, res) {
             }
         });
 
+        await publishToQueue('ORDER_SELLER_DASHBOARD.ORDER_CREATED', order);
+
         res.status(201).json({ 
             message: 'Order created successfully',
             order

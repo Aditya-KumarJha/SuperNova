@@ -233,6 +233,58 @@ module.exports = function () {
         );
     });
 
+    subscribeToQueue('PAYMENT_NOTIFICATION.PAYMENT_INITIATED', async (data) => {
+
+        const customerName =
+            `${data.fullName?.firstName || ''} ${data.fullName?.lastName || ''}`.trim();
+
+        const emailHTMLTemplate = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; color: #333;">
+                <h2 style="color: #2c3e50;">Payment Initiated 🚀</h2>
+
+                <p>Hi <strong>${customerName || 'there'}</strong>,</p>
+
+                <p>
+                    Your payment process has been initiated successfully for the following order:
+                </p>
+
+                <h3>Payment Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Order ID</strong></td>
+                        <td style="padding: 8px 0;">${data.orderId}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0;"><strong>Amount</strong></td>
+                        <td style="padding: 8px 0;">${data.currency?.toUpperCase()} ${data.amount}</td>
+                    </tr>
+                </table>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+
+                <p>
+                    You will receive further updates once the payment is completed.
+                </p>
+
+                <p style="margin-top: 30px;">
+                    Best regards,<br/>
+                    <strong>The SuperNova Team</strong>
+                </p>
+
+                <p style="font-size: 12px; color: #888;">
+                    This is an automated notification regarding your payment initiation.
+                </p>
+            </div>
+        `;
+
+        await sendEmail(
+            data.email,
+            'Payment Initiated',
+            `Your payment for Order ID ${data.orderId} has been initiated`,
+            emailHTMLTemplate
+        );
+    });
+
     subscribeToQueue('PRODUCT_NOTIFICATION.PRODUCT_CREATED', async (data) => {
 
         const sellerName =

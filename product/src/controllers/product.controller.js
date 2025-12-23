@@ -26,18 +26,17 @@ async function createProduct(req, res) {
 
         const product = await productModel.create(productData);
 
-        try {
-            await publishToQueue('PRODUCT_NOTIFICATION.PRODUCT_CREATED', {
+        await Promise.all([
+            publishToQueue('PRODUCT_NOTIFICATION.PRODUCT_CREATED', {
                 email: req.user.email,
                 fullName: req.user.fullName,
                 productId: product._id,
                 title: product.title,
                 price: product.price,
                 stock: product.stock,
-            });
-        } catch (queueError) {
-            console.error('Error publishing PRODUCT_NOTIFICATION.PRODUCT_CREATED:', queueError);
-        }
+            }),
+            publishToQueue('PRODUCT_SELLER_DASHBOARD.PRODUCT_CREATED', product)
+        ]);
 
         res.status(201).json({
             message: "Product created successfully",
