@@ -1,5 +1,7 @@
 # Order Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Order microservice is responsible for managing orders. It provides endpoints for creating, updating, retrieving, and canceling orders. It also integrates with RabbitMQ for event-driven communication.
 
 ## Features
@@ -8,6 +10,30 @@ The Order microservice is responsible for managing orders. It provides endpoints
 - Cancel orders
 - Publishes and consumes events via RabbitMQ
 - Health Check Endpoint: Provides a health check endpoint at `/` to verify the service status.
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t order-service .
+docker run --env-file .env -p 4003:4003 order-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+  ```bash
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+  docker build -t order-service .
+  docker tag order-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/order-service:latest
+  docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/order-service:latest
+  ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `tests`, `*.log`).
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -22,11 +48,7 @@ RABBITMQ_URL=YOUR_RABBITMQ_CONNECTION_URL
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `order` Directory
-```bash
-cd order
+cd SuperNova/order
 ```
 
 ### Install Dependencies
@@ -56,6 +78,7 @@ npm test
 - It provides RESTful endpoints for managing orders.
 
 ## Endpoints
+All endpoints are prefixed with `/api/order` unless otherwise noted.
 ### POST /orders
 - **Description**: Create a new order.
 - **Request Body**: `{ items, address, paymentMethod }`
@@ -106,6 +129,15 @@ npm test
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
 
+## .dockerignore Example
+```
+node_modules
+tests
+*.log
+Dockerfile
+.env
+```
+
 ## Dependencies
 - `amqplib`
 - `axios`
@@ -116,6 +148,9 @@ Jest is used for testing. Test files are located in the `tests` directory.
 - `jsonwebtoken`
 - `mongoose`
 - `supertest`
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
 
 ## Dev Dependencies
 - `jest`

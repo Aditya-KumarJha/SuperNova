@@ -1,5 +1,7 @@
 # Seller Dashboard Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Seller Dashboard microservice is responsible for managing seller-related operations. It provides endpoints for managing products, orders, and other seller-specific functionalities.
 
 ## Features
@@ -11,6 +13,30 @@ The Seller Dashboard microservice is responsible for managing seller-related ope
   - Update order statuses.
 - **Health Check Endpoint**: Provides a health check endpoint at `/` to verify the service status.
 - **RabbitMQ Integration**: For event-driven communication between microservices.
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t seller-dashboard-service .
+docker run --env-file .env -p 4007:4007 seller-dashboard-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+   ```bash
+   aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+   docker build -t seller-dashboard-service .
+   docker tag seller-dashboard-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/seller-dashboard-service:latest
+   docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/seller-dashboard-service:latest
+   ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `tests`, `*.log`).
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -25,11 +51,7 @@ RABBITMQ_URL=YOUR_RABBITMQ_URL
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `seller-dashboard` Directory
-```bash
-cd seller-dashboard
+cd SuperNova/seller-dashboard
 ```
 
 ### Install Dependencies
@@ -59,6 +81,7 @@ npm run test:watch
 ```
 
 ## Endpoints
+All endpoints are prefixed with `/api/seller` unless otherwise noted.
 ### Product Management
 #### POST /products
 - **Description**: Add a new product.
@@ -108,6 +131,15 @@ npm run test:watch
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
 
+## .dockerignore Example
+```
+node_modules
+tests
+*.log
+Dockerfile
+.env
+```
+
 ## Dependencies
 - `cookie-parser`
 - `dotenv`
@@ -115,6 +147,9 @@ Jest is used for testing. Test files are located in the `tests` directory.
 - `express-validator`
 - `jsonwebtoken`
 - `mongoose`
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
 
 ## Dev Dependencies
 - `jest`

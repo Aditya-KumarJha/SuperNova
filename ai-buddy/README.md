@@ -1,5 +1,7 @@
 # AI Buddy Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The AI Buddy microservice provides an AI-powered assistant that can help users search for products and add them to their cart via a real-time Socket.IO connection. It orchestrates LLM tools to talk to other SuperNova microservices (like `product` and `cart`).
 
 ## Features
@@ -7,6 +9,30 @@ The AI Buddy microservice provides an AI-powered assistant that can help users s
 - Uses Google Gemini via LangChain for AI reasoning
 - Tool-based integration with Product and Cart microservices
 - JWT-based authentication over WebSocket handshake (via cookies)
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t ai-buddy-service .
+docker run --env-file .env -p 4005:4005 ai-buddy-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+  ```bash
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+  docker build -t ai-buddy-service .
+  docker tag ai-buddy-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/ai-buddy-service:latest
+  docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/ai-buddy-service:latest
+  ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `__tests__`, `test`, `*.log`).
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -23,11 +49,7 @@ GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `ai-buddy` Directory
-```bash
-cd ai-buddy
+cd SuperNova/ai-buddy
 ```
 
 ### Install Dependencies
@@ -102,7 +124,21 @@ socket.on("disconnect", () => {
 - `socket.io`
 - `zod`
 
+## .dockerignore Example
+```
+node_modules
+test
+__tests__
+*.log
+Dockerfile
+.env
+```
+
 ## Notes
 - This service depends on the `product` and `cart` microservices being available at `http://localhost:4001` and `http://localhost:4002` respectively.
 - The Auth service must issue JWT tokens and set them in a `token` cookie for WebSocket authentication to succeed.
 - Make sure `GOOGLE_API_KEY` has access to the `gemini-2.5-flash` model as configured in `src/agents/agent.js`.
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
+- **Broker Pattern**: Uses a broker for inter-service communication via HTTP and WebSocket.

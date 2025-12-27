@@ -1,5 +1,7 @@
 # Payment Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Payment microservice is responsible for handling payment processing and verification. It provides endpoints for creating and verifying payments. It also integrates with RabbitMQ for event-driven communication.
 
 ## Features
@@ -8,6 +10,30 @@ The Payment microservice is responsible for handling payment processing and veri
 - Secure payment handling
 - Publishes and consumes events via RabbitMQ
 - Health Check Endpoint
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t payment-service .
+docker run --env-file .env -p 4006:4006 payment-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+  ```bash
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+  docker build -t payment-service .
+  docker tag payment-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/payment-service:latest
+  docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/payment-service:latest
+  ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `tests`, `*.log`).
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -23,11 +49,7 @@ RABBITMQ_URL=YOUR_RABBITMQ_CONNECTION_URL
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `payment` Directory
-```bash
-cd payment
+cd SuperNova/payment
 ```
 
 ### Install Dependencies
@@ -62,6 +84,7 @@ npm run test:watch
 - It provides RESTful endpoints for managing payments.
 
 ## Endpoints
+All endpoints are prefixed with `/api/payment` unless otherwise noted.
 ### POST /create/:orderId
 - **Description**: Create a new payment for an order.
 - **Request Body**: `{ amount, currency, paymentMethod }`
@@ -99,12 +122,24 @@ npm run test:watch
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
 
+## .dockerignore Example
+```
+node_modules
+tests
+*.log
+Dockerfile
+.env
+```
+
 ## Dependencies
 - `amqplib`
 - `dotenv`
 - `express`
 - `mongoose`
 - `payment-sdk`
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
 
 ## Dev Dependencies
 - `jest`

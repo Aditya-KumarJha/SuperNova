@@ -1,5 +1,7 @@
 # Product Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Product microservice is responsible for managing product data. It provides endpoints for creating, updating, deleting, and retrieving product information. It also integrates with RabbitMQ for event-driven communication.
 
 ## Features
@@ -7,6 +9,30 @@ The Product microservice is responsible for managing product data. It provides e
 - Retrieve product details
 - Image upload and management using ImageKit
 - Publishes and consumes events via RabbitMQ
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t product-service .
+docker run --env-file .env -p 4001:4001 product-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+  ```bash
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+  docker build -t product-service .
+  docker tag product-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/product-service:latest
+  docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/product-service:latest
+  ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `tests`, `*.log`).
 
 ## Updated Features
 - **Health Check Endpoint**: Provides a health check endpoint at `/` to verify the service status.
@@ -36,11 +62,7 @@ RABBITMQ_URL=YOUR_RABBITMQ_CONNECTION_URL
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `product` Directory
-```bash
-cd product
+cd SuperNova/product
 ```
 
 ### Install Dependencies
@@ -70,6 +92,7 @@ npm test
 - It provides RESTful endpoints for managing products.
 
 ## Endpoints
+All endpoints are prefixed with `/api/product` unless otherwise noted.
 ### POST /products
 - **Description**: Create a new product.
 - **Request Body**: `{ name, price, description, image }`
@@ -120,6 +143,15 @@ npm test
 ## Testing
 Jest is used for testing. Test files are located in the `tests` directory.
 
+## .dockerignore Example
+```
+node_modules
+tests
+*.log
+Dockerfile
+.env
+```
+
 ## Dependencies
 - `amqplib`
 - `cookie-parser`
@@ -131,6 +163,9 @@ Jest is used for testing. Test files are located in the `tests` directory.
 - `mongoose`
 - `multer`
 - `uuid`
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
 
 ## Dev Dependencies
 - `cross-env`

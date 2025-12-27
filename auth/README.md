@@ -1,5 +1,7 @@
 # Auth Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Auth microservice is responsible for handling user authentication and authorization. It provides endpoints for user registration, login, logout, and session management.
 
 ## Features
@@ -10,6 +12,30 @@ The Auth microservice is responsible for handling user authentication and author
 - Address management: Users can add, retrieve, and set default addresses
 - RabbitMQ integration for event-driven communication
 - Health Check Endpoint: Provides a health check endpoint at `/` to verify the service status.
+
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t auth-service .
+docker run --env-file .env -p 3000:3000 auth-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+  ```bash
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+  docker build -t auth-service .
+  docker tag auth-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/auth-service:latest
+  docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/auth-service:latest
+  ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `__tests__`, `test`, `*.log`).
 
 ## Environment Variables
 The following environment variables are required to run this service:
@@ -27,11 +53,7 @@ RABBITMQ_URL=YOUR_RABBITMQ_URL
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `auth` Directory
-```bash
-cd auth
+cd SuperNova/auth
 ```
 
 ### Install Dependencies
@@ -61,6 +83,7 @@ npm run test:watch
 ```
 
 ## Endpoints
+All endpoints are prefixed with `/api/auth` unless otherwise noted.
 ### POST /register
 - **Description**: Register a new user.
 - **Request Body**: `{ username, password, email }`
@@ -103,6 +126,16 @@ npm run test:watch
   - **Event**: Published when a user logs in.
   - **Payload**: `{ userId, username, email, fullName }`
 
+## .dockerignore Example
+```
+node_modules
+test
+__tests__
+*.log
+Dockerfile
+.env
+```
+
 ## Inter-Service Communication
 - The `notification` microservice listens to the `USER_CREATED` and `USER_LOGGED_IN` queues.
   - For `USER_CREATED`: Sends a welcome email to the user.
@@ -123,6 +156,11 @@ Jest is used for testing. Test files are located in the `__tests__` directory.
 - `jsonwebtoken`
 - `mongoose`
 
+## Additional Notes
+- **Testing**: Jest is used for testing. Test files are located in the `__tests__` directory.
+- **Broker Pattern**: Uses a broker for inter-service communication via RabbitMQ.
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
+
 ## Dev Dependencies
 - `jest`
 - `mongodb-memory-server`
@@ -140,4 +178,5 @@ module.exports = {
     collectCoverageFrom: ['src/**/*.js', '!src/**/index.js'],
     verbose: true,
 };
+```
 ```

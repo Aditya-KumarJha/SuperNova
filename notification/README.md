@@ -1,5 +1,7 @@
 # Notification Microservice
 
+This microservice supports containerization and cloud deployment. It includes a `Dockerfile` and `.dockerignore` for building Docker images, and can be deployed to AWS ECS, ECR, or other container services.
+
 The Notification microservice is responsible for sending transactional emails triggered by events from other services (e.g., Auth, Payment, Product, and Order). It listens to RabbitMQ queues and sends rich HTML emails using Nodemailer.
 
 ## Features
@@ -25,6 +27,30 @@ The Notification microservice is responsible for sending transactional emails tr
 - **Inter-Service Communication**:
   - Processes events from `auth`, `payment`, `product`, and `order` services to send transactional emails.
 
+## Containerization & Cloud Deployment
+- **Docker Support**: Includes a `Dockerfile` and `.dockerignore` for building efficient container images.
+- **AWS Deployment**: Service can be deployed to AWS using ECS, ECR, or EC2. Update environment variables in your AWS environment or use AWS Secrets Manager/Parameter Store for sensitive data.
+
+### Build & Run with Docker
+```bash
+docker build -t notification-service .
+docker run --env-file .env -p 4004:4004 notification-service
+```
+
+### Example AWS Deployment Steps
+1. Build Docker image and tag for ECR:
+   ```bash
+   aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+   docker build -t notification-service .
+   docker tag notification-service:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/notification-service:latest
+   docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/notification-service:latest
+   ```
+2. Deploy the image using AWS ECS, EC2, or other container orchestration services.
+3. Set environment variables in your AWS task definition or EC2 instance.
+
+### .dockerignore
+Ensure you have a `.dockerignore` file to exclude unnecessary files from the Docker build context (e.g., `node_modules`, `test`, `*.log`).
+
 ## Environment Variables
 The following environment variables are required to run this service:
 
@@ -40,11 +66,7 @@ REFRESH_TOKEN=YOUR_GOOGLE_OAUTH_REFRESH_TOKEN
 ### Clone the Repository
 ```bash
 git clone https://github.com/Aditya-KumarJha/SuperNova.git
-```
-
-### Navigate to the `notification` Directory
-```bash
-cd notification
+cd SuperNova/notification
 ```
 
 ### Install Dependencies
@@ -89,6 +111,18 @@ npm start
 - `mongoose` (reserved for future persistence if needed)
 - `nodemailer`
 
+## .dockerignore Example
+```
+node_modules
+test
+*.log
+Dockerfile
+.env
+```
+
 ## Notes
 - This service does not expose public APIs beyond a basic health check; it is primarily event-driven via RabbitMQ.
 - Make sure your Google account and OAuth credentials are configured to allow sending emails via Nodemailer.
+
+## Additional Notes
+- **Security**: Use strong secrets and secure your environment variables, especially in production/cloud environments.
