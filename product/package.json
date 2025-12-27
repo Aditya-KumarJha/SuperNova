@@ -22,7 +22,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "multer": "^2.0.2",
-    "uuid": "^13.0.0"
+    "uuid": "8.0.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
