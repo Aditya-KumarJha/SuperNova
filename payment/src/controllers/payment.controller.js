@@ -18,7 +18,7 @@ async function createPayment(req, res) {
             return res.status(400).json({ message: 'Invalid orderId' });
         }
 
-        const orderResponse = await axios.get(`http://localhost:4003/api/orders/${orderId}`, {
+        const orderResponse = await axios.get(`http://nova-alb-28718941.ap-northeast-3.elb.amazonaws.com/api/orders/${orderId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

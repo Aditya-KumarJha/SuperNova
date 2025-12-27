@@ -9,14 +9,14 @@ async function createOrder(req, res) {
 
     try{
         // Fetch user cart from Cart Service
-        const cartResponse = await axios.get(`http://localhost:4002/api/cart`, {
+        const cartResponse = await axios.get(`http://nova-alb-28718941.ap-northeast-3.elb.amazonaws.com/api/cart`, {
             headers: { 
                 Authorization: `Bearer ${token}` 
             }
         });
         
         const products = await Promise.all(cartResponse.data.cart.items.map(async(item) => {
-            return (await axios.get(`http://localhost:4001/api/products/${item.productId}`,{
+            return (await axios.get(`http://nova-alb-28718941.ap-northeast-3.elb.amazonaws.com/api/products/${item.productId}`,{
                 headers: { 
                     Authorization: `Bearer ${token}` 
                 }

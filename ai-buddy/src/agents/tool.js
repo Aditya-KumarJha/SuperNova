@@ -7,7 +7,7 @@ const searchProduct = tool(async ({ query, token }) => {
         throw new Error("Authentication token is required but was not provided");
     }
     
-    const response = await axios.get(`http://localhost:4001/api/products?q=${query}`, {
+    const response = await axios.get(`http://nova-alb-28718941.ap-northeast-3.elb.amazonaws.com/api/products?q=${query}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -27,8 +27,8 @@ const addProductToCart = tool(async ({ productId, qty=1, token }) => {
     if (!token) {
         throw new Error("Authentication token is required but was not provided");
     }
-    
-    const response = await axios.post(`http://localhost:4002/api/cart/items`, {
+
+    const response = await axios.post(`http://nova-alb-28718941.ap-northeast-3.elb.amazonaws.com/api/cart/items`, {
         productId,
         qty
     }, {
